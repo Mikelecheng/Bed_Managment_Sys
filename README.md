@@ -29,3 +29,6 @@ Dashboard
 Admit petient
 Once patient has admitted, system will auto assign ward to the patient, and Simulation of patient flow - Occupied, Discharged pending Sanitizing, Sanitizing, Available.
 
+Code organisation
+![image](https://user-images.githubusercontent.com/108938551/200256657-55e91cb8-92aa-41e2-a92d-7b51ef83f801.png)
+
