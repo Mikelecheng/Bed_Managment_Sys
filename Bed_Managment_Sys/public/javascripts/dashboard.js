@@ -107,6 +107,7 @@ function refresh_dashboard() {
                 document.getElementById("totalCICustP").innerHTML = cip;
                 document.getElementById("totalCICustG").innerHTML = cig;
                 document.getElementById("totalCustWL").innerHTML = wl;
+
                 cursor.continue();
             }
         };
@@ -309,6 +310,7 @@ function update_checked_in_customer(idd, cname, croom, cage, ops) {
             }
             else {
                 data.status = "Waiting List";
+                alert("No bed is available now and queue the patient in waiting-list");
             }
 
             var objRequest = store.put(data);
@@ -504,26 +506,6 @@ function auto_assign_room_wl() {
             db.close();
         };
     }
-}
-
-function assigning_wl(idd, cname, croom, cage, ops) {
-    const date = new Date();
-    var deadline = addSeconds(date, 6);
-    var x = setInterval(function () {
-        var now = new Date().getTime();
-        var t = deadline - now;
-        var days = Math.floor(t / (1000 * 60 * 60 * 24));
-        var hours = Math.floor((t % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((t % (1000 * 60 * 60)) / (1000 * 60));
-        var seconds = Math.floor((t % (1000 * 60)) / 1000);
-
-        if (t < 0) {
-            clearInterval(x);
-            //            console.log(name);
-            //            console.log(rno);
-            update_checked_in_customer(idd, cname, croom, cage, ops);
-        }
-    }, 1000);
 }
 
 function openForm() {
