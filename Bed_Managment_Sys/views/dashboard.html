@@ -1,0 +1,207 @@
+<html>
+
+<head>
+	<title>Kaplan Bed management system</title>
+	<link rel="stylesheet" href="css/styledashboard.css">
+
+</head>
+
+<body id="grad1" onload="generate_patient_id();refresh_dashboard();draw_occupancy_box();">
+	<div class="center">
+		<h3>
+			Kaplan Bed Management System</h3>
+	</div>
+
+	<br>
+
+	<table border=1 width=100%>
+		<tr>
+			<td>
+				<button class="open-button" onclick="openForm()">Admit Patient</button>
+
+				<div class="form-popup" id="myForm">
+					<form class="form-container">
+						<h3>Patient Admission Registration</h3>
+
+						<label for="patientname"><b>Patient Name</b></label>
+						<input type="text" placeholder="Enter Patient Name" id="patientname" required>
+
+						<label for="patientid"><b>Patient ID</b>
+							<span id=patientid></span>
+						</label>
+						<br></br>
+
+						<label for="gender"><b>Gender</b></label>
+						<select id=gender>
+							<option value=female>Female</option>
+							<option value=male>Male</option>
+						</select><br></br>
+
+						<label for="age"><b>Age</b></label>
+						<input type="text" placeholder="Enter Age" id="age" required>
+
+						<label for="category"><b>Category</b></label>
+						<select id=category>
+							<option value=intensive>Intensive case</option>
+							<option value=infectious>Infectious disease</option>
+							<option value=general>General care</option>
+						</select>
+						<br></br><br></br>
+						<button type="submit" class="btn" onclick="admit_patient()">Admit</button>
+						<button type="button" class="btn cancel" onclick="closeForm()">Close</button>
+					</form>
+				</div>				
+			</td>
+		</tr>
+
+		<tr>
+			<td class="td" width=440px height=150px align=left>
+					<div id=custprogress></div>
+				
+			</td>
+			<td align=right>
+				<table class="td" width=100%>
+					<tr>
+						<td width=15%>Total Admission <b>In Progress</b></td>
+						<td width=15%>Total <b>Admitted Patient</b> in <b>Intensive care</b> ward</td>
+						<td width=15%>Total <b>Admitted Patient</b> in <b>Infectious disease</b> ward</td>
+						<td width=15%>Total <b>Admitted Patient</b> in <b>General</b> ward</td>
+						<td width=15%>Total Patient in <b>Waiting List</b></td>
+					</tr>
+					<tr>
+						<td>
+							<div id=totalCIWIP class=counter>0</div>
+						</td>
+						<td>
+							<div class=counter id=totalCICustD>0</div>
+						</td>
+						<td>
+							<div class=counter id=totalCICustP>0</div>
+						</td>
+						<td>
+							<div class=counter id=totalCICustG>0</div>
+						</td>
+						<td>
+							<div class=counter id=totalCustWL>0</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+
+			<table border=1 class="td" width=100%>
+				<tr>
+					<td colspan=8 align=center>
+						<b>Bed Occupancy Dashboard</b>
+					</td>
+				</tr>
+				<tr>
+					<td align=center colspan=2><b>Intensive care ward</b></td>
+					<td align=center colspan=2><b>Infectious disease ward</b></td>
+					<td align=center colspan=4><b>General ward</b></td>
+				</tr>
+				<tr>
+					<td width=10%>
+						<div class="ward" id="1">Ward 1</div>
+					<td width=10%>
+						<div class="ward" id="2">Ward 2</div>
+					<td width=10%>
+						<div class="ward" id="11">Ward 11</div>
+					<td width=10%>
+						<div class="ward" id="12">Ward 12</div>
+					<td width=10%>
+						<div class="ward" id="21">Ward 21</div>
+					<td width=10%>
+						<div class="ward" id="22">Ward 22</div>
+					<td width=10%>
+						<div class="ward" id="31">Ward 31</div>
+					<td width=10%>
+						<div class="ward" id="32">Ward 32</div>
+					</td>
+				</tr>
+				<tr>
+					<td width=10%>
+						<div class="ward" id="3">Ward 3</div>
+					<td width=10%>
+						<div class="ward" id="4">Ward 4</div>
+					<td width=10%>
+						<div class="ward" id="13">Ward 13</div>
+					<td width=10%>
+						<div class="ward" id="14">Ward 14</div>
+					<td width=10%>
+						<div class="ward" id="23">Ward 23</div>
+					<td width=10%>
+						<div class="ward" id="24">Ward 24</div>
+					<td width=10%>
+						<div class="ward" id="33">Ward 33</div>
+					<td width=10%>
+						<div class="ward" id="34">Ward 34</div>
+					</td>
+				</tr>
+				<tr>
+					<td width=10%>
+						<div class="ward" id="5">Ward 5</div>
+					<td width=10%>
+						<div class="ward" id="6">Ward 6</div>
+					<td width=10%>
+						<div class="ward" id="15">Ward 15</div>
+					<td width=10%>
+						<div class="ward" id="16">Ward 16</div>
+					<td width=10%>
+						<div class="ward" id="25">Ward 25</div>
+					<td width=10%>
+						<div class="ward" id="26">Ward 26</div>
+					<td width=10%>
+						<div class="ward" id="35">Ward 35</div>
+					<td width=10%>
+						<div class="ward" id="36">Ward 36</div>
+					</td>
+				</tr>
+				<tr>
+					<td width=10%>
+						<div class="ward" id="7">Ward 7</div>
+					<td width=10%>
+						<div class="ward" id="8">Ward 8</div>
+					<td width=10%>
+						<div class="ward" id="17">Ward 17</div>
+					<td width=10%>
+						<div class="ward" id="18">Ward 18</div>
+					<td width=10%>
+						<div class="ward" id="27">Ward 27</div>
+					<td width=10%>
+						<div class="ward" id="28">Ward 28</div>
+					<td width=10%>
+						<div class="ward" id="37">Ward 37</div>
+					<td width=10%>
+						<div class="ward" id="38">Ward 38</div>
+					</td>
+				</tr>
+				<tr>
+					<td width=10%>
+						<div class="ward" id="9">Ward 9</div>
+					<td width=10%>
+						<div class="ward" id="10">Ward 10</div>
+					<td width=10%>
+						<div class="ward" id="19">Ward 19</div>
+					<td width=10%>
+						<div class="ward" id="20">Ward 20</div>
+					<td width=10%>
+						<div class="ward" id="29">Ward 29</div>
+					<td width=10%>
+						<div class="ward" id="30">Ward 30</div>
+					<td width=10%>
+						<div class="ward" id="39">Ward 39</div>
+					<td width=10%>
+						<div class="ward" id="40">Ward 40</div>
+					</td>
+				</tr>S
+			</table>
+			</td>
+	</table>
+
+</body>
+
+<script language="javascript" type="text/javascript" src="/javascripts/dashboard.js"></script>
+
+</html>
