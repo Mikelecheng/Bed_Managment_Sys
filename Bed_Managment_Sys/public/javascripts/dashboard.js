@@ -180,8 +180,8 @@ function sanitizing_ward(id, roomno, name, age) {
 
 //Discharging ward
 function discharging_ward(id, roomno, name, age) {
-    console.log(name);
-    console.log(roomno);
+//    console.log(name);
+//    console.log(roomno);
     var html = "Ward " + roomno + "<br><div style='background-color: #d0f636' class='processing'>DISCHARGING</div>";
     html += "<div style='background-color: #d0f636 ; font-size:13px'>" + name + " (ID: " + id + ") | " + age + "</div>";
 
@@ -289,8 +289,8 @@ function update_patient_status(idd, cname, croom, cage, ops) {
     if (ops == "Check-In") {
         a = get_ward_number(idd, cname, croom, "", cage);
     }
-    console.log(idd);
-    console.log(a);
+//    console.log(idd);
+//    console.log(a);
 
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
     var open = indexedDB.open("Hospital_Patient", 1);
@@ -326,7 +326,7 @@ function update_patient_status(idd, cname, croom, cage, ops) {
             }
 
             var objRequest = store.put(data);
-            console.log(data)
+//            console.log(data)
         };
 
         tx.oncomplete = function () {
@@ -419,7 +419,6 @@ function start_creation(id, name, category, age, gender) {
             update_patient_status(id, name, category, age, "Check-In");
             refresh_dashboard();
 
-            console.log("calling");
             process_discharging(id);
         }
     }, 1000);
@@ -457,13 +456,13 @@ function process_discharging(id) {
                 var tx = db.transaction("Hospital_Patient", "readonly");
                 var store = tx.objectStore("Hospital_Patient");
                 var getData = store.get(id);
-                console.log(id);
+//                console.log(id);
 
                 getData.onsuccess = function (e) {
 
                     var data = e.target.result;
-                    console.log(data.name);
-                    console.log(data.status);
+//                    console.log(data.name);
+//                    console.log(data.status);
                     if (data.status.trim() == "Check-In Completed") {
                         discharging_ward(data.id, data.roomno, data.name, data.age);
                     }
@@ -508,17 +507,14 @@ function auto_assign_ward_wl() {
 
                 if (cursor.value.status.trim() == "Waiting List") {
 
-                    //                    console.log(cursor.value.name);    
-                    //                    console.log(cursor.value.status);    
                     update_patient_status(cursor.value.id, cursor.value.name, cursor.value.room, cursor.value.age, "Check-In");
-                    console.log("calling2");
+//                    console.log("calling2");
                     process_discharging(cursor.value.id);
                 }
 
                 cursor.continue();
             }
         };
-        //   alert(pci);
 
         tx.oncomplete = function () {
             db.close();
