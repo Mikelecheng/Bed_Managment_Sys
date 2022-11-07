@@ -378,7 +378,7 @@ function clear_form() {
 
 //Process patient admission
 function start_creation(id, name, category, age, gender) {
-    var ticker = "<div class='tdsmall'>" + name + " (ID :" + id + ") | " + age + " | " + category + " - Assigning now and completing in <span id=sec_" + id + "></span></div>";
+    var ticker = "<div class='tdappend'>" + name + " (ID :" + id + ") | " + age + " | " + category + " - Assigning now and completing in <span id=sec_" + id + "></span></div>";
 
     if (document.getElementById("messagebar").innerHTML.trim() != "") {
         var div = document.createElement("div");
