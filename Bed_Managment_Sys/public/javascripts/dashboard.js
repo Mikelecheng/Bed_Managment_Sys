@@ -409,7 +409,7 @@ function start_creation(id, name, category, age, gender) {
             clearInterval(x);
 
             var div = document.createElement("div");
-            div.innerHTML = "<div class='tdsmall'>" + name + " (ID :" + id + ") | " + age + " | " + category + " - Admission Completed</div></div>";
+            div.innerHTML = "<div class='tdappend'>" + name + " (ID :" + id + ") | " + age + " | " + category + " - Admission Completed</div></div>";
             div.id = id;
             document.getElementById('messagebar').appendChild(div);
 
