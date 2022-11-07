@@ -22,7 +22,7 @@ Download the repository
 
 How to use it
 Login
-username: user1
+username: user1 ,
 password: user1
 
 Dashboard
@@ -32,6 +32,5 @@ Once patient has admitted, system will auto assign ward to the patient, and Simu
 Code organisation
 ![image](https://user-images.githubusercontent.com/108938551/200256657-55e91cb8-92aa-41e2-a92d-7b51ef83f801.png)
 
-Technologies
-Koa2/Nodejs
-Javascript/CSS/HTML/JQuery/Ajax
+Technologies:
+Koa2/Nodejs/Javascript/CSS/HTML/JQuery/Ajax
