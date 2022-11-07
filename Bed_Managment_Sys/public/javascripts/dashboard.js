@@ -1,15 +1,15 @@
 //Patient admission to be carried out in the next 1 minute upon registration by admission officer
-const Const_Sec_Ticker = 60;
+const Const_Sec_Ticker = 15;
 //Bed occupancy is 2 minutes, after which the patient will be discharged
-const Const_Sec_Occupancy = 120;
+const Const_Sec_Occupancy = 40;
 //Once a patient is discharged, there will be a waiting time of 1 minute where the status will be at “Discharged pending Sanitizing”
-const Const_Sec_Discharging = 60;
+const Const_Sec_Discharging = 20;
 //Bed Sanitizing will be 2 minutes
-const Const_Sec_Sanitizing = 120;
+const Const_Sec_Sanitizing = 20;
 //Completed
 const Const_Sec_Available = 3;
 
-
+//Main process of admit patient
 function admit_patient(){
     if (validate_input()){
         register_new_patient();
@@ -17,6 +17,7 @@ function admit_patient(){
     }
 }
 
+//Validate user input - Name & Age
 function validate_input(){
     var name = document.getElementById("patientname").value;
     var alpha = /^[a-zA-Z\s-, ]+$/; 
@@ -43,15 +44,17 @@ function validate_input(){
     return true;
 }
 
+//Register of new patient
 function register_new_patient() {
-    create_ticker(
+    start_creation(
         document.getElementById("patientid").innerHTML,
         document.getElementById("patientname").value,
         document.getElementById("category").value,
         document.getElementById("age").value
     );
 
-    new_patient_register(
+//Create patient DB record
+    create_patient_record(
         document.getElementById("patientid").innerHTML,
         document.getElementById("patientname").value,
         document.getElementById("category").value,
@@ -65,6 +68,7 @@ function register_new_patient() {
     clear_form();
 }
 
+//Refreshing bed dashboard to update total counts
 function refresh_dashboard() {
 
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
@@ -118,14 +122,15 @@ function refresh_dashboard() {
     }
 }
 
-function Complete_Check_Out(id, roomno, name, age) {
-    var html = "Ward " + roomno + "<br><div style='background-color: #3EFB1C' class='blink_me'>AVAILABLE</div>";
+//Set room to be available
+function set_ward_available(id, roomno, name, age) {
+    var html = "Ward " + roomno + "<br><div style='background-color: #3EFB1C' class='processing'>AVAILABLE</div>";
 
     document.getElementById(roomno).innerHTML = html;
 
     const date = new Date();
-//    var deadline = addSeconds(date, 3);
-    var deadline = addSeconds(date, Const_Sec_Available);
+//    var deadline = setTimer(date, 3);
+    var deadline = setTimer(date, Const_Sec_Available);
     var x = setInterval(function () {
         var now = new Date().getTime();
         var t = deadline - now;
@@ -138,25 +143,26 @@ function Complete_Check_Out(id, roomno, name, age) {
         if (t < 0) {
             clearInterval(x);
 
-            update_checked_in_customer(id, name, category, age, "Check-Out");
+            update_patient_status(id, name, category, age, "Check-Out");
             refresh_dashboard();
             document.getElementById(roomno).innerHTML = 'Ward ' + roomno;
 
-            auto_assign_room_wl();
+            auto_assign_ward_wl();
         }
     }, 1000);
 }
 
-function cleaning_room(id, roomno, name, age) {
-    var html = "Ward " + roomno + "<br><div style='background-color: #FE7328' class='blink_me'>SANITIZING</div>";
+//Sanitizing ward
+function sanitizing_ward(id, roomno, name, age) {
+    var html = "Ward " + roomno + "<br><div style='background-color: #f636a9' class='processing'>SANITIZING</div>";
 
-    html += "<div style='background-color: #77E75C ; font-size:12px'>" + name + " (ID: " + id + ") | " + age + "</div>";
+    html += "<div style='background-color: #f636a9 ; font-size:13px'>" + name + " (ID: " + id + ") | " + age + "</div>";
 
     document.getElementById(roomno).innerHTML = html;
 
     const date = new Date();
-//    var deadline = addSeconds(date, 9);
-    var deadline = addSeconds(date, Const_Sec_Sanitizing);
+//    var deadline = setTimer(date, 9);
+    var deadline = setTimer(date, Const_Sec_Sanitizing);
     var x = setInterval(function () {
         var now = new Date().getTime();
         var t = deadline - now;
@@ -167,22 +173,23 @@ function cleaning_room(id, roomno, name, age) {
 
         if (t < 0) {
             clearInterval(x);
-            Complete_Check_Out(id, roomno, name, age);
+            set_ward_available(id, roomno, name, age);
         }
     }, 1000);
 }
 
-function check_me_out(id, roomno, name, age) {
+//Discharging ward
+function discharging_ward(id, roomno, name, age) {
     console.log(name);
     console.log(roomno);
-    var html = "Ward " + roomno + "<br><div style='background-color: #FC68ED' class='blink_me'>DISCHARGING</div>";
-    html += "<div style='background-color: #F6ADEE ; font-size:12px'>" + name + " (ID: " + id + ") | " + age + "</div>";
+    var html = "Ward " + roomno + "<br><div style='background-color: #d0f636' class='processing'>DISCHARGING</div>";
+    html += "<div style='background-color: #d0f636 ; font-size:13px'>" + name + " (ID: " + id + ") | " + age + "</div>";
 
     document.getElementById(roomno).innerHTML = html;
 
     const date = new Date();
-//    var deadline = addSeconds(date, 6);
-    var deadline = addSeconds(date, Const_Sec_Discharging);
+//    var deadline = setTimer(date, 6);
+    var deadline = setTimer(date, Const_Sec_Discharging);
     var x = setInterval(function () {
         var now = new Date().getTime();
         var t = deadline - now;
@@ -193,12 +200,13 @@ function check_me_out(id, roomno, name, age) {
 
         if (t < 0) {
             clearInterval(x);
-            cleaning_room(id, roomno, name, age);
+            sanitizing_ward(id, roomno, name, age);
         }
     }, 1000);
 }
 
-function draw_occupancy_box() {
+//Process patient occupancy
+function process_occupancy() {
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
     // Open (or create) the database
     var open = indexedDB.open("Hospital_Patient", 1);
@@ -221,8 +229,8 @@ function draw_occupancy_box() {
             if (cursor) {
 
                 if (cursor.value.status.trim() == "Check-In Completed") {
-                    var html = "Ward " + cursor.value.roomno + "<br><div style='background-color: #FBD603'>OCCUPIED</div>";
-                    html += "<div style='background-color: #F6F336 ; font-size:12px'>" + cursor.value.name + " (ID: " + cursor.value.id + ") | " + cursor.value.age + "</div>";
+                    var html = "Ward " + cursor.value.roomno + "<br><div style='background-color: #36b0f6;color: white'>OCCUPIED</div>";
+                    html += "<div style='background-color: #36b0f6 ; font-size:13px'>" + cursor.value.name + " (ID: " + cursor.value.id + ") | " + cursor.value.age + "</div>";
 
                     document.getElementById(cursor.value.roomno).innerHTML = html;
                 }
@@ -237,12 +245,14 @@ function draw_occupancy_box() {
     }
 }
 
-function assign_room(id, name, room, roomno, age) {
+//Get ward number
+//Intensive care ward (10 beds from 1 to 10), Infectious disease ward (10 beds from 11 to 20) and general ward (20 beds from 21 to 40)
+function get_ward_number(id, name, room, roomno, age) {
     let a, b;
-    let c = 100;
+    let c = 999;
     if (room == "intensive") {
         a = 1;
-        b = 4;
+        b = 10;
     }
     if (room == "infectious") {
         a = 11;
@@ -267,15 +277,17 @@ function assign_room(id, name, room, roomno, age) {
 
 }
 
+//Random generating patient ID
 function generate_patient_id() {
     const random = Math.floor(Math.random() * 9099999);
     document.getElementById("patientid").innerHTML = random;
 }
 
-function update_checked_in_customer(idd, cname, croom, cage, ops) {
-    var a = 444;
+//Update patient status when any status changes
+function update_patient_status(idd, cname, croom, cage, ops) {
+    var a = 888;
     if (ops == "Check-In") {
-        a = assign_room(idd, cname, croom, "", cage);
+        a = get_ward_number(idd, cname, croom, "", cage);
     }
     console.log(idd);
     console.log(a);
@@ -300,7 +312,7 @@ function update_checked_in_customer(idd, cname, croom, cage, ops) {
         getData.onsuccess = function (e) {
 
             var data = e.target.result;
-            if (a != 100 && ops == "Check-In") {
+            if (a != 999 && ops == "Check-In") {
                 data.status = "Check-In Completed";
                 data.roomno = a;
             }
@@ -323,11 +335,12 @@ function update_checked_in_customer(idd, cname, croom, cage, ops) {
     }
 
     if (ops == "Check-In") {
-        draw_occupancy_box();
+        process_occupancy();
     }
 }
 
-function new_patient_register(idd, cname, croom, cage) {
+//Create patient record into DB
+function create_patient_record(idd, cname, croom, cage) {
 
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
 
@@ -357,30 +370,32 @@ function new_patient_register(idd, cname, croom, cage) {
     }
 }
 
+//Clear form value after admitted
 function clear_form() {
     document.getElementById("patientname").value = "";
     document.getElementById("age").value = "";
 }
 
-function create_ticker(id, name, category, age, gender) {
+//Process patient admission
+function start_creation(id, name, category, age, gender) {
     var ticker = "<div class='tdsmall'>" + name + " (ID :" + id + ") | " + age + " | " + category + " - Assigning now and completing in <span id=sec_" + id + "></span></div>";
 
-    if (document.getElementById("custprogress").innerHTML.trim() != "") {
+    if (document.getElementById("messagebar").innerHTML.trim() != "") {
         var div = document.createElement("div");
         div.innerHTML = ticker;
         div.id = id;
-        document.getElementById('custprogress').appendChild(div);
+        document.getElementById('messagebar').appendChild(div);
     }
     else {
         var div = document.createElement("div");
         div.innerHTML = ticker;
         div.id = id;
-        document.getElementById('custprogress').appendChild(div);
+        document.getElementById('messagebar').appendChild(div);
     }
 
     const date = new Date();
-//    var deadline = addSeconds(date, 10);
-    var deadline = addSeconds(date, Const_Sec_Ticker);
+//    var deadline = setTimer(date, 10);
+    var deadline = setTimer(date, Const_Sec_Ticker);
     var x = setInterval(function () {
         var now = new Date().getTime();
         var t = deadline - now;
@@ -396,24 +411,25 @@ function create_ticker(id, name, category, age, gender) {
             var div = document.createElement("div");
             div.innerHTML = "<div class='tdsmall'>" + name + " (ID :" + id + ") | " + age + " | " + category + " - Admission Completed</div></div>";
             div.id = id;
-            document.getElementById('custprogress').appendChild(div);
+            document.getElementById('messagebar').appendChild(div);
 
-            var rno = 444;
-            rno = assign_room(id, name, category, "", age);
+            var rno = 888;
+            rno = get_ward_number(id, name, category, "", age);
 
-            update_checked_in_customer(id, name, category, age, "Check-In");
+            update_patient_status(id, name, category, age, "Check-In");
             refresh_dashboard();
 
             console.log("calling");
-            discharging(id);
+            process_discharging(id);
         }
     }, 1000);
 }
 
-function discharging(id) {
+//Keeping Bed occupancy 2 minutes and trigger for discharging 
+function process_discharging(id) {
     const date = new Date();
-//    var deadline = addSeconds(date, 20);
-    var deadline = addSeconds(date, Const_Sec_Occupancy);
+//    var deadline = setTimer(date, 20);
+    var deadline = setTimer(date, Const_Sec_Occupancy);
     var x = setInterval(function () {
         var now = new Date().getTime();
         var t = deadline - now;
@@ -449,7 +465,7 @@ function discharging(id) {
                     console.log(data.name);
                     console.log(data.status);
                     if (data.status.trim() == "Check-In Completed") {
-                        check_me_out(data.id, data.roomno, data.name, data.age);
+                        discharging_ward(data.id, data.roomno, data.name, data.age);
                     }
                 };
 
@@ -461,12 +477,14 @@ function discharging(id) {
     }, 1000);
 }
 
-function addSeconds(date, seconds) {
+//Set timer for auto processing
+function setTimer(date, seconds) {
     date.setSeconds(date.getSeconds() + seconds);
     return date;
 }
 
-function auto_assign_room_wl() {
+//Auto assign the bed to waiting list patient based on the wards and availability of bed
+function auto_assign_ward_wl() {
     var indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
     // Open (or create) the database
     var open = indexedDB.open("Hospital_Patient", 1);
@@ -492,9 +510,9 @@ function auto_assign_room_wl() {
 
                     //                    console.log(cursor.value.name);    
                     //                    console.log(cursor.value.status);    
-                    update_checked_in_customer(cursor.value.id, cursor.value.name, cursor.value.room, cursor.value.age, "Check-In");
+                    update_patient_status(cursor.value.id, cursor.value.name, cursor.value.room, cursor.value.age, "Check-In");
                     console.log("calling2");
-                    discharging(cursor.value.id);
+                    process_discharging(cursor.value.id);
                 }
 
                 cursor.continue();

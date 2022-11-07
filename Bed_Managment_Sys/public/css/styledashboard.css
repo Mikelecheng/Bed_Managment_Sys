@@ -15,7 +15,7 @@
   
   }
   #grad1 { 
-  background-image: linear-gradient(to bottom , #76b852, #76b852, #76b852)
+  background-image: linear-gradient(to bottom , #36f6f0, #36f6f0, #36f6f0)
   }
   .td {font-family:arial;  margin: auto; 
     padding: 10px;}
@@ -24,7 +24,7 @@
   .counter {font-family:arial;   
     padding: 5px; font-size:55px; text-align:left}
   
-  .blink_me {
+  .processing {
     animation: blinker 1s linear infinite;
   }
   
@@ -47,8 +47,9 @@
   
   /* Button used to open the contact form - fixed at the bottom of the page */
   .open-button {
-    background-color: #555;
-    color: white;
+    background-color: rgb(255, 247, 0);
+    color: rgb(9, 0, 36);
+    font-weight: 900;
     padding: 16px 20px;
     border: none;
     cursor: pointer;
