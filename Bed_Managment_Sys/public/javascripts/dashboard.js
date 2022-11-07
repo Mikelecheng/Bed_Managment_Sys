@@ -1,11 +1,11 @@
 //Patient admission to be carried out in the next 1 minute upon registration by admission officer
-const Const_Sec_Ticker = 15;
+const Const_Sec_Ticker = 60;
 //Bed occupancy is 2 minutes, after which the patient will be discharged
-const Const_Sec_Occupancy = 40;
+const Const_Sec_Occupancy = 120;
 //Once a patient is discharged, there will be a waiting time of 1 minute where the status will be at “Discharged pending Sanitizing”
-const Const_Sec_Discharging = 20;
+const Const_Sec_Discharging = 60;
 //Bed Sanitizing will be 2 minutes
-const Const_Sec_Sanitizing = 20;
+const Const_Sec_Sanitizing = 120;
 //Completed
 const Const_Sec_Available = 3;
 
